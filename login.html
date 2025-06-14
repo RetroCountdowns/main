@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RetroCountdowns – Logowanie</title>
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body {
+      font-family: "Segoe UI",sans-serif;
+      background: linear-gradient(135deg,#1e2024,#3a3f51);
+      color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      height:100vh;
+    }
+    .card {
+      background:#2a2d35; padding:2rem;
+      border-radius:8px; width:320px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.5);
+    }
+    h2 { text-align:center; margin-bottom:1rem; }
+    .lang { text-align:right; margin-bottom:1rem; }
+    .lang button {
+      background:transparent; border:none; color:#aad;
+      margin-left:0.5rem; cursor:pointer; font-weight:600;
+    }
+    .lang button.active { color:#fff; }
+    label { display:block; margin:0.5rem 0 0.25rem; }
+    input {
+      width:100%; padding:0.6rem; border:none;
+      border-radius:4px; background:#3a3f51; color:#fff;
+    }
+    button {
+      width:100%; padding:0.75rem; margin-top:1rem;
+      border:none; border-radius:4px; background:#0066ff;
+      color:#fff; font-size:1rem; cursor:pointer;
+      transition:background .2s;
+    }
+    button:hover { background:#0051cc; }
+    .small-link {
+      display:block; text-align:center; margin-top:0.75rem;
+      color:#aad; text-decoration:underline; cursor:pointer;
+      font-size:.9rem;
+    }
+    .message { text-align:center; margin-top:1rem; height:1.2rem; }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="lang">
+    <button id="pl" class="active">PL</button>
+    <button id="en">EN</button>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <form id="loginForm">
+    <h2 data-key="title-login">Logowanie</h2>
+    <label data-key="label-email">Email:</label>
+    <input type="email" id="email" required>
+    <label data-key="label-pass">Hasło:</label>
+    <input type="password" id="password" required>
+    <button type="submit" id="loginBtn" data-key="btn-login">Zaloguj się</button>
+  </form>
+
+  <a class="small-link" id="toRegister" data-key="link-register">Nie masz konta? Zarejestruj się</a>
+  <a class="small-link" id="toReset" data-key="link-reset">Zapomniałeś hasła?</a>
+
+  <!-- REGISTER FORM -->
+  <form id="registerForm" class="hidden">
+    <h2 data-key="title-register">Rejestracja</h2>
+    <label data-key="label-email">Email:</label>
+    <input type="email" id="regEmail" required>
+    <label data-key="label-pass">Hasło (min. 6 znaków):</label>
+    <input type="password" id="regPass" minlength="6" required>
+    <button type="submit" data-key="btn-register">Stwórz konto</button>
+    <a class="small-link" id="toLoginFromReg" data-key="link-login">Masz już konto? Zaloguj się</a>
+  </form>
+
+  <!-- RESET FORM -->
+  <form id="resetForm" class="hidden">
+    <h2 data-key="title-reset">Resetowanie hasła</h2>
+    <label data-key="label-email">Email:</label>
+    <input type="email" id="resetEmail" required>
+    <button type="submit" data-key="btn-reset">Wyślij link resetujący</button>
+    <a class="small-link" id="toLoginFromReset" data-key="link-login">Wróć do logowania</a>
+  </form>
+
+  <div class="message" id="msg"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import {
+    getAuth, signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+  // TODO: wklej swoją konfigurację Firebase:
+  const firebaseConfig = {
+    apiKey: "AIzaSyCl7uBGgJnfoaYi4By49EItjJZG6Dx0P_k",
+    authDomain: "retrocountdowns.firebaseapp.com",
+    projectId: "retrocountdowns",
+    storageBucket: "retrocountdowns.appspot.com",
+    messagingSenderId: "846455265699",
+    appId: "1:846455265699:web:e29f1102043afd79282216"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // i18n
+  const dict = {
+    pl: {
+      "title-login":"Logowanie","label-email":"Email:","label-pass":"Hasło:",
+      "btn-login":"Zaloguj się","link-register":"Nie masz konta? Zarejestruj się",
+      "link-reset":"Zapomniałeś hasła?","title-register":"Rejestracja",
+      "btn-register":"Stwórz konto","link-login":"Masz już konto? Zaloguj się",
+      "title-reset":"Resetowanie hasła","btn-reset":"Wyślij link resetujący",
+      "msg-login":"Zalogowano pomyślnie!","msg-register":"Konto utworzone!",
+      "msg-reset":"Link resetujący wysłany!","msg-error":"Błąd: "
+    },
+    en: {
+      "title-login":"Login","label-email":"Email:","label-pass":"Password:",
+      "btn-login":"Sign In","link-register":"Don't have account? Register",
+      "link-reset":"Forgot password?","title-register":"Register",
+      "btn-register":"Create account","link-login":"Already have account? Sign In",
+      "title-reset":"Reset Password","btn-reset":"Send reset link",
+      "msg-login":"Successfully signed in!","msg-register":"Account created!",
+      "msg-reset":"Reset link sent!","msg-error":"Error: "
+    }
+  };
+  let lang="pl";
+  const elems = document.querySelectorAll("[data-key]");
+  const setText = () => elems.forEach(el=>{
+    const k=el.getAttribute("data-key");
+    el.textContent = dict[lang][k];
+  });
+  document.getElementById("pl").onclick = ()=>{
+    lang="pl"; setText(); toggleActive();
+  };
+  document.getElementById("en").onclick = ()=>{
+    lang="en"; setText(); toggleActive();
+  };
+  const toggleActive = ()=>{
+    document.getElementById("pl").classList.toggle("active",lang==="pl");
+    document.getElementById("en").classList.toggle("active",lang==="en");
+  };
+  setText(); toggleActive();
+
+  // UI toggles
+  const loginF=document.getElementById("loginForm"),
+        regF=document.getElementById("registerForm"),
+        rstF=document.getElementById("resetForm"),
+        msg=document.getElementById("msg");
+  document.getElementById("toRegister").onclick=e=>{e.preventDefault();loginF.classList.add("hidden");regF.classList.remove("hidden");rstF.classList.add("hidden");msg.textContent="";};
+  document.getElementById("toReset").onclick=e=>{e.preventDefault();loginF.classList.add("hidden");regF.classList.add("hidden");rstF.classList.remove("hidden");msg.textContent="";};
+  document.getElementById("toLoginFromReg").onclick=e=>{e.preventDefault();loginF.classList.remove("hidden");regF.classList.add("hidden");rstF.classList.add("hidden");msg.textContent="";};
+  document.getElementById("toLoginFromReset").onclick=e=>{e.preventDefault();loginF.classList.remove("hidden");regF.classList.add("hidden");rstF.classList.add("hidden");msg.textContent="";};
+
+  // Auth handlers
+  loginF.onsubmit = async e=>{
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(auth,
+        email.value, password.value);
+      msg.style.color="lightgreen"; msg.textContent=dict[lang]["msg-login"];
+      setTimeout(()=>location.href="home.html",500);
+    } catch(err){
+      msg.style.color="#f66"; msg.textContent=dict[lang]["msg-error"]+err.message;
+    }
+  };
+  regF.onsubmit = async e=>{
+    e.preventDefault();
+    try {
+      await createUserWithEmailAndPassword(auth,
+        regEmail.value, regPass.value);
+      msg.style.color="lightgreen"; msg.textContent=dict[lang]["msg-register"];
+      setTimeout(()=>{
+        loginF.classList.remove("hidden");
+        regF.classList.add("hidden");
+        msg.textContent="";
+      },800);
+    } catch(err){
+      msg.style.color="#f66"; msg.textContent=dict[lang]["msg-error"]+err.message;
+    }
+  };
+  rstF.onsubmit = async e=>{
+    e.preventDefault();
+    try {
+      await sendPasswordResetEmail(auth, resetEmail.value);
+      msg.style.color="lightgreen"; msg.textContent=dict[lang]["msg-reset"];
+    } catch(err){
+      msg.style.color="#f66"; msg.textContent=dict[lang]["msg-error"]+err.message;
+    }
+  };
+</script>
+
+</body>
+</html>

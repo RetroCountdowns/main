@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Retro Countdowns</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  color: #1b1b1b;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px 0 100px; /* usunięto padding boczny */
+  user-select: none;
+  scrollbar-width: thin;
+  scrollbar-color: #6a82fb #d9e2ec;
+}
+
+main {
+  width: 100%; /* rozciąga się na całą szerokość */
+  max-width: none;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+
+    h1 {
+      font-size: 3.8rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 0.25em;
+      letter-spacing: 0.05em;
+    }
+
+    h2 {
+      font-weight: 500;
+      font-size: 1.8rem;
+      color: #34495e;
+      margin-bottom: 0;
+    }
+
+p.description {
+  font-size: 1.15rem;
+  color: #555f68;
+  line-height: 1.6;
+  margin-bottom: 0;
+  padding: 0 10px; /* zmniejszono padding */
+}
+    button.btn-create {
+      background: linear-gradient(90deg, #6a82fb, #fc5c7d);
+      border: none;
+      padding: 15px 45px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #fff;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(252, 92, 125, 0.5);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      align-self: center;
+      max-width: 260px;
+    }
+    button.btn-create:hover {
+      background: linear-gradient(90deg, #fc5c7d, #6a82fb);
+      box-shadow: 0 8px 25px rgba(106, 130, 251, 0.7);
+    }
+
+    .countdown-preview {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: #6a82fb;
+      background: #e9efff;
+      padding: 15px 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(106, 130, 251, 0.3);
+      letter-spacing: 0.25em;
+      user-select: none;
+      min-width: 220px;
+      margin: 0 auto 0; /* zmniejszony margines */
+    }
+
+    footer {
+      width: 100%;
+      padding: 18px 20px;
+      background: #f0f4f8;
+      text-align: center;
+      color: #34495e;
+      font-size: 1rem;
+      user-select: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      border-top: 1px solid #d0d7de;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    select {
+      background: #6a82fb;
+      border: none;
+      color: white;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 0 8px #6a82fbaa;
+      transition: background-color 0.3s ease;
+    }
+    select:hover, select:focus {
+      background: #576ddf;
+      outline: none;
+    }
+.features-section {
+  margin-top: 60px;
+  padding: 30px 10px; /* zmniejszony padding boczny */
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+  width: 100%;
+  text-align: center;
+}
+
+.features-section h2 {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 1em;
+}
+
+.features-section p {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #444;
+}
+  </style>
+</head>
+<body>
+  <main>
+    <h1 data-lang-en="Welcome to Retro Countdowns" data-lang-pl="Witamy w Retro Countdownach">Welcome to Retro Countdowns</h1>
+    <h2 data-lang-en="Make your own Countdowns" data-lang-pl="Twórz własne odliczania">Make your own Countdowns</h2>
+    <p class="description" data-lang-en="Design and customize beautiful, modern countdown timers for any event. Easy to create, fully responsive, and tailored to your style." data-lang-pl="Projektuj i dostosowuj piękne, nowoczesne odliczenia na każde wydarzenie. Proste tworzenie, w pełni responsywne i dopasowane do Twojego stylu.">
+      Design and customize beautiful, modern countdown timers for any event. Easy to create, fully responsive, and tailored to your style.
+    </p>
+
+    <button class="btn-create" id="btnCreate" data-lang-en="Create Countdown" data-lang-pl="Utwórz odliczanie">Create Countdown</button>
+
+    <div class="countdown-preview" aria-label="Countdown preview">
+      01:23:45
+    </div>
+<section class="features-section">
+  <h2 data-lang-en="Creating Countdowns on Any Device" data-lang-pl="Tworzenie odliczeń na każdym urządzeniu">
+    Creating Countdowns on Any Device
+  </h2>
+  <p class="description" data-lang-en="You don’t need a Windows computer to make countdowns. Our tool works smoothly on Android, tablets, or any modern device with a browser. It’s fast, responsive, and easy to use — anytime, anywhere." 
+     data-lang-pl="Nie potrzebujesz komputera z Windowsem, by tworzyć odliczania. Nasze narzędzie działa płynnie na Androidzie, tabletach i innych nowoczesnych urządzeniach z przeglądarką. Jest szybkie, responsywne i łatwe w użyciu — gdziekolwiek jesteś.">
+    You don’t need a Windows computer to make countdowns. Our tool works smoothly on Android, tablets, or any modern device with a browser. It’s fast, responsive, and easy to use — anytime, anywhere.
+  </p>
+</section>
+
+<section id="faq" class="faq">
+  <h2 data-lang-en="FAQ" data-lang-pl="Najczęstsze pytania">FAQ</h2>
+
+  <div class="faq-item">
+    <h3 data-lang-en="Is an account required to create a countdown?" data-lang-pl="Czy trzeba mieć konto, aby stworzyć odliczanie?">
+      Is an account required to create a countdown?
+    </h3>
+    <p class="description" data-lang-en="Yes, you need to be logged in to create and manage your countdowns." data-lang-pl="Tak, musisz być zalogowany, aby tworzyć i zarządzać swoimi odliczaniami.">
+      Yes, you need to be logged in to create and manage your countdowns.
+    </p>
+  </div>
+
+  <div class="faq-item">
+    <h3 data-lang-en="Can I edit my countdown after creating it?" data-lang-pl="Czy mogę edytować moje odliczanie po jego utworzeniu?">
+      Can I edit my countdown after creating it?
+    </h3>
+    <p class="description" data-lang-en="Yes, you can edit your countdown any time by logging into your account and selecting it from your list." data-lang-pl="Tak, możesz edytować swoje odliczanie w dowolnym momencie, logując się na swoje konto i wybierając je z listy.">
+      Yes, you can edit your countdown any time by logging into your account and selecting it from your list.
+    </p>
+  </div>
+
+  <div class="faq-item">
+    <h3 data-lang-en="Can I change the language of the countdown page?" data-lang-pl="Czy mogę zmienić język strony odliczania?">
+      Can I change the language of the countdown page?
+    </h3>
+    <p class="description" data-lang-en="Yes, the countdown page is multilingual and will automatically switch based on your browser’s settings." data-lang-pl="Tak, strona odliczania jest wielojęzyczna i automatycznie dopasowuje się do ustawień języka w przeglądarce.">
+      Yes, the countdown page is multilingual and will automatically switch based on your browser’s settings.
+    </p>
+  </div>
+
+  <div class="faq-item">
+    <h3 data-lang-en="Are any personal data stored when creating an account?" data-lang-pl="Czy jakieś dane są przechowywane podczas tworzenia konta?">
+      Are any personal data stored when creating an account?
+    </h3>
+    <p class="description" data-lang-en="No, we do not store any personal data. Authentication is handled securely via Firebase, and no additional data is saved." data-lang-pl="Nie, nie przechowujemy żadnych danych osobowych. Logowanie odbywa się bezpiecznie przez Firebase i żadne dodatkowe dane nie są zapisywane.">
+      No, we do not store any personal data. Authentication is handled securely via Firebase, and no additional data is saved.
+    </p>
+  </div>
+
+  <div class="faq-item">
+    <h3 data-lang-en="How can I share my countdown so that people around the world can see it?" data-lang-pl="Jak udostępnić moje odliczanie, żeby ludzie z całego świata je zobaczyli?">
+      How can I share my countdown so that people around the world can see it?
+    </h3>
+    <p class="description" data-lang-en="After creating your countdown, you’ll automatically receive a unique link. You can share this link with anyone – they can open it in any browser and view your countdown." data-lang-pl="Po stworzeniu odliczania automatycznie otrzymasz unikalny link. Możesz go udostępnić każdemu – każdy może go otworzyć w przeglądarce i zobaczyć Twoje odliczanie.">
+      After creating your countdown, you’ll automatically receive a unique link. You can share this link with anyone – they can open it in any browser and view your countdown.
+    </p>
+  </div>
+</section>
+  </main>
+
+  <footer>
+    <span data-lang-en="Select Language:" data-lang-pl="Wybierz język:">Select Language:</span>
+    <select id="langSelect" aria-label="Select language">
+      <option value="en">English</option>
+      <option value="pl">Polski</option>
+    </select>
+  </footer>
+
+  <script>
+    document.getElementById('btnCreate').addEventListener('click', () => {
+      window.location.href = 'login.html';
+    });
+
+    function setLanguage(lang) {
+      document.querySelectorAll('[data-lang-en]').forEach(el => {
+        el.textContent = lang === 'pl' ? el.getAttribute('data-lang-pl') : el.getAttribute('data-lang-en');
+      });
+      localStorage.setItem('selectedLanguage', lang);
+      document.getElementById('langSelect').value = lang;
+    }
+
+    document.getElementById('langSelect').addEventListener('change', e => {
+      setLanguage(e.target.value);
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('selectedLanguage') || 'en';
+      setLanguage(savedLang);
+    });
+  </script>
+</body>
+</html>
