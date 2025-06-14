@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home - RetroCountdowns</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #1f1f1f;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    main {
+      flex: 1;
+      padding: 2rem;
+      text-align: center;
+    }
+    footer {
+      background: #1f1f1f;
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      color: #bbb;
+      font-size: 0.9rem;
+    }
+    footer button {
+      background: none;
+      border: 1.5px solid #bbb;
+      border-radius: 3px;
+      color: #bbb;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    footer button:hover, footer button.active {
+      background-color: #bb86fc;
+      color: #121212;
+      border-color: #bb86fc;
+    }
+    button#logoutBtn {
+      margin-top: 2rem;
+      padding: 0.5rem 1rem;
+      background-color: #bb86fc;
+      border: none;
+      border-radius: 4px;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button#logoutBtn:hover {
+      background-color: #9a67ea;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCl7uBGgJnfoaYi4By49EItjJZG6Dx0P_k",
+      authDomain: "retrocountdowns.firebaseapp.com",
+      projectId: "retrocountdowns",
+      storageBucket: "retrocountdowns.firebasestorage.app",
+      messagingSenderId: "846455265699",
+      appId: "1:846455265699:web:e29f1102043afd79282216"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Teksty w dwóch językach
+    const texts = {
+      pl: {
+        welcome: (user) => `Witaj, ${user}!`,
+        personalHomepage: "To jest Twoja spersonalizowana strona po zalogowaniu.",
+        logout: "Wyloguj się",
+      },
+      en: {
+        welcome: (user) => `Welcome, ${user}!`,
+        personalHomepage: "This is your personal homepage after login.",
+        logout: "Logout",
+      }
+    };
+
+    let currentLang = 'pl';
+
+    function setLanguage(lang, userName) {
+      currentLang = lang;
+      document.getElementById('welcome').textContent = texts[lang].welcome(userName);
+      document.getElementById('personalHomepage').textContent = texts[lang].personalHomepage;
+      document.getElementById('logoutBtn').textContent = texts[lang].logout;
+
+      // Aktywne podświetlenie przycisku
+      document.querySelectorAll('footer button.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+    }
+
+    window.onload = () => {
+      const welcomeEl = document.getElementById('welcome');
+      const personalHomepageEl = document.getElementById('personalHomepage');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const userName = user.displayName || user.email || 'User';
+          setLanguage(currentLang, userName);
+        } else {
+          window.location.href = 'index.html';
+        }
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        signOut(auth).then(() => {
+          window.location.href = 'index.html';
+        }).catch((error) => {
+          alert('Error during logout: ' + error.message);
+        });
+      });
+
+      // Obsługa przycisków zmiany języka
+      document.querySelectorAll('footer button.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Pobierz nazwę użytkownika ponownie z powitania albo auth.currentUser
+          const user = auth.currentUser;
+          if (!user) return;
+          const userName = user.displayName || user.email || 'User';
+          setLanguage(btn.dataset.lang, userName);
+        });
+      });
+    };
+  </script>
+</head>
+<body>
+  <header>RetroCountdowns - Home</header>
+  <main>
+    <h1 id="welcome">Loading...</h1>
+    <p id="personalHomepage"></p>
+    <button id="logoutBtn">Logout</button>
+  </main>
+  <footer>
+    <button class="lang-btn active" data-lang="pl">PL</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </footer>
+</body>
+</html>
