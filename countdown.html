@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Countdown</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 { font-size: 2rem; }
+    #timer {
+      font-size: 2.5rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="countdownTitle">Odliczanie</h1>
+  <div id="timer">00:00:00</div>
+
+  <script>
+    // Pobierz ID z adresu URL
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get('id'));
+
+    // Pobierz countdowny z localStorage
+    const countdowns = JSON.parse(localStorage.getItem('countdowns') || '[]');
+    const countdown = countdowns.find(c => c.id === id);
+
+    if (!countdown) {
+      document.body.innerHTML = "<h1>Nie znaleziono odliczania 😢</h1>";
+    } else {
+      document.getElementById('countdownTitle').textContent = countdown.name;
+
+      const endTime = new Date(countdown.datetime).getTime();
+
+      function updateCountdown() {
+        const now = Date.now();
+        const diff = endTime - now;
+
+        if (diff <= 0) {
+          document.getElementById("timer").textContent = "00:00:00";
+          clearInterval(timerInterval);
+          return;
+        }
+
+        const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+        const minutes = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        const seconds = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+
+        document.getElementById("timer").textContent = `${hours}:${minutes}:${seconds}`;
+      }
+
+      updateCountdown();
+      const timerInterval = setInterval(updateCountdown, 1000);
+    }
+  </script>
+</body>
+</html>
