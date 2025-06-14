@@ -1,305 +1,111 @@
-<!DOCTYPE html>
-<html lang="pl">
+<!DOCTYPE html><html lang="pl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Home - RetroCountdowns</title>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0; padding: 0;
-      background: #121212;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      background: #1f1f1f;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      user-select: none;
-    }
-    main {
-      flex: 1;
-      padding: 2rem;
-      text-align: center;
-    }
-    button#logoutBtn {
-      margin-top: 2rem;
-      padding: 0.5rem 1rem;
-      background-color: #bb86fc;
-      border: none;
-      border-radius: 4px;
-      color: #121212;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button#logoutBtn:hover {
-      background-color: #9a67ea;
-    }
-    footer {
-      background: #1f1f1f;
-      padding: 0.5rem 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-      position: relative;
-    }
-
-    .lang-dropdown {
-      position: relative;
-      user-select: none;
-      cursor: pointer;
-      color: #bbb;
-      font-weight: 600;
-      border: 1.5px solid #bbb;
-      padding: 0.3rem 0.8rem;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background-color: transparent;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .lang-dropdown:hover {
-      background-color: #333333;
-      color: #bb86fc;
-      border-color: #bb86fc;
-    }
-    .lang-dropdown:after {
-      content: "▼";
-      font-size: 0.6rem;
-      margin-left: 6px;
-      user-select: none;
-    }
-
-    .lang-options {
-      position: absolute;
-      bottom: 100%;
-      background-color: #1f1f1f;
-      border: 1.5px solid #bbb;
-      border-radius: 4px;
-      width: 100%;
-      max-width: 100px;
-      display: none;
-      flex-direction: column;
-      user-select: none;
-      z-index: 10;
-    }
-    .lang-options.show {
-      display: flex;
-    }
-    .lang-options button {
-      background: none;
-      border: none;
-      color: #bbb;
-      padding: 0.4rem 0.7rem;
-      text-align: left;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s;
-      width: 100%;
-    }
-    .lang-options button:hover {
-      background-color: #bb86fc;
-      color: #121212;
-    }
-
-    .coins-display {
-      font-weight: 700;
-      font-size: 1.3rem;
-      margin-bottom: 1rem;
-      color: gold;
-      user-select: none;
-    }
-    .quest-list {
-      max-width: 350px;
-      background: #222;
-      border-radius: 8px;
-      padding: 1rem;
-      color: #eee;
-      font-family: Arial, sans-serif;
-      margin: 0 auto;
-    }
-    .quest {
-      margin-bottom: 1.3rem;
-      border-bottom: 1px solid #444;
-      padding-bottom: 0.8rem;
-    }
-    .quest-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-    .coin-reward {
-      color: #f7d358;
-    }
-    .quest-status {
-      font-size: 1.4rem;
-    }
-    .progress-bar-container {
-      background: #444;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 0.5rem;
-      height: 14px;
-    }
-    .progress-bar {
-      height: 100%;
-      background: #4caf50;
-      width: 0%;
-      transition: width 0.4s ease;
-    }
-    .progress-text {
-      margin-top: 0.2rem;
-      font-size: 0.9rem;
-      color: #bbb;
-      text-align: right;
-      user-select: none;
-    }
+    body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background:#121212; color:#eee; display:flex; flex-direction:column; min-height:100vh; }
+    header { background:#1f1f1f; padding:1rem; text-align:center; font-size:1.5rem; }
+    main { flex:1; padding:2rem; }
+    .coins-display { font-weight:700; font-size:1.3rem; margin-bottom:1rem; color:gold; }
+    .quest-list { max-width:400px; margin:0 auto 2rem; background:#222; border-radius:8px; padding:1rem; }
+    .quest { margin-bottom:1.5rem; }
+    .quest-header { display:flex; justify-content:space-between; align-items:center; font-weight:600; }
+    .coin-reward { color:#f7d358; }
+    .progress-bar-container { background:#444; border-radius:10px; overflow:hidden; margin:0.5rem 0; height:14px; }
+    .progress-bar { height:100%; background:#4caf50; width:0%; transition:width 0.4s; }
+    .progress-text { text-align:right; font-size:0.9rem; color:#bbb; }
+    .countdown-section { max-width:400px; margin:0 auto 2rem; text-align:center; }
+    .countdown-section p { margin-bottom:1rem; }
+    .btn-primary { background:#0066ff; color:white; border:none; padding:0.6rem 1.2rem; border-radius:5px; cursor:pointer; }
+    footer { background:#1f1f1f; padding:0.5rem 1rem; display:flex; justify-content:flex-end; position:sticky; bottom:0; }
+    .lang-dropdown { position:relative; color:#bbb; font-weight:600; border:1px solid #bbb; padding:0.3rem 0.8rem; border-radius:4px; cursor:pointer; }
+    .lang-dropdown:after { content:"▼"; margin-left:6px; }
+    .lang-options { position:absolute; bottom:100%; right:0; background:#1f1f1f; border:1px solid #bbb; border-radius:4px; display:none; flex-direction:column; }
+    .lang-options.show { display:flex; }
+    .lang-options button { background:none; border:none; color:#bbb; padding:0.5rem 1rem; text-align:left; cursor:pointer; }
+    .lang-options button:hover { background:#333; color:#fff; }
   </style>
 </head>
 <body>
   <header>RetroCountdowns</header>
   <main>
-    <div class="coins-display">Coins: <span id="coinsCount">10</span> 🪙</div>
+    <div class="coins-display">Monety: <span id="coinsCount">10</span></div>
     <div class="quest-list" id="questList"></div>
-    <button id="logoutBtn">Wyloguj się</button>
+    <div class="countdown-section">
+      <p>Your countdowns: <span id="countdownCount">0</span></p>
+      <button class="btn-primary" onclick="location.href='create.html'">Create Countdown</button>
+    </div>
+    <button id="logoutBtn" class="btn-primary">Wyloguj się</button>
   </main>
   <footer>
-    <div class="lang-dropdown" onclick="toggleLangDropdown()">Język</div>
-    <div class="lang-options" id="langOptions">
-      <button onclick="setLang('pl')">PL</button>
-      <button onclick="setLang('en')">EN</button>
+    <div class="lang-dropdown" id="langDropdownBtn">PL
+      <div class="lang-options" id="langOptions">
+        <button data-lang="pl">PL</button>
+        <button data-lang="en">EN</button>
+      </div>
     </div>
   </footer>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";const firebaseConfig = {
+  apiKey: "AIzaSyCl7uBGgJnfoaYi4By49EItjJZG6Dx0P_k",
+  authDomain: "retrocountdowns.firebaseapp.com",
+  projectId: "retrocountdowns",
+  storageBucket: "retrocountdowns.appspot.com",
+  messagingSenderId: "846455265699",
+  appId: "1:846455265699:web:e29f1102043afd79282216"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCl7uBGgJnfoaYi4By49EItjJZG6Dx0P_k",
-      authDomain: "retrocountdowns.firebaseapp.com",
-      projectId: "retrocountdowns",
-      storageBucket: "retrocountdowns.appspot.com",
-      messagingSenderId: "846455265699",
-      appId: "1:846455265699:web:e29f1102043afd79282216"
-    };
+const quests = [
+  { id:'createAccount', titlePL:'Utwórz konto', titleEN:'Create account', reward:10, check:()=>!!localStorage.getItem('accountCreatedAt'), progressText:()=> '1/1' },
+  { id:'createCountdown', titlePL:'Utwórz odliczanie', titleEN:'Create countdown', reward:8, check:()=> localStorage.getItem('countdownCreated') === 'true', progressText:()=>'0/1' },
+  { id:'accountAge', titlePL:'Konto ≥12h', titleEN:'Account ≥12h', reward:0,
+    check:()=>{ const c=localStorage.getItem('accountCreatedAt'); if(!c) return false; return (Date.now()-new Date(c))/3600000>=12; },
+    progressText:()=>{ const c=localStorage.getItem('accountCreatedAt'); if(!c) return '0/12h'; const h=(Date.now()-new Date(c))/3600000; return Math.min(h,12).toFixed(1)+'/12h'; }
+  }
+];
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+let coins = parseInt(localStorage.getItem('coins'))||10;
+let lang='pl';
 
-    const quests = [
-      {
-        id: 'createAccount',
-        titlePL: 'Utwórz konto',
-        titleEN: 'Create account',
-        reward: 10,
-        check: () => !!localStorage.getItem('accountCreatedAt'),
-        progressText: () => '1/1'
-      },
-      {
-        id: 'createCountdown',
-        titlePL: 'Utwórz odliczanie',
-        titleEN: 'Create countdown',
-        reward: 8,
-        check: () => !!localStorage.getItem('countdownCreated'),
-        progressText: () => '1/1'
-      },
-      {
-        id: 'accountAge',
-        titlePL: 'Konto ma min. 12 godzin',
-        titleEN: 'Account age ≥ 12h',
-        reward: 0,
-        check: () => {
-          const createdAt = localStorage.getItem('accountCreatedAt');
-          if (!createdAt) return false;
-          const createdTime = new Date(createdAt).getTime();
-          return (Date.now() - createdTime) / (1000 * 60 * 60) >= 12;
-        },
-        progressText: () => {
-          const createdAt = localStorage.getItem('accountCreatedAt');
-          if (!createdAt) return '0/12h';
-          const diffH = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
-          return `${Math.min(diffH, 12).toFixed(1)}/12h`;
-        }
-      }
-    ];
+function saveCoins(){ localStorage.setItem('coins',coins); }
+function updateUI(){
+  document.getElementById('coinsCount').textContent=coins;
+  const list=document.getElementById('questList'); list.innerHTML='';
+  quests.forEach(q=>{
+    const done=q.check();
+    let progress= done?100: (q.id==='createCountdown'? (q.check()?100:0) : 0);
+    if(q.id==='accountAge'){ const c=localStorage.getItem('accountCreatedAt'); if(c){ progress=Math.min(100,((Date.now()-new Date(c))/3600000)/12*100); }}
+    const title=lang==='pl'?q.titlePL:q.titleEN;
+    list.insertAdjacentHTML('beforeend',`
+      <div class="quest">
+        <div class="quest-header"><span>${title} (+${q.reward})</span><span>${done?'✅':'❌'}</span></div>
+        <div class="progress-bar-container"><div class="progress-bar" style="width:${progress}%"></div></div>
+        <div class="progress-text">${q.progressText()}</div>
+        ${!done&&q.reward>0?`<button onclick="claim('${q.id}')" class="btn-primary" style="margin-top:0.5rem">Odbierz</button>`:''}
+      </div>
+    `);
+  });
+  document.getElementById('countdownCount').textContent = localStorage.getItem('countdownCreated')==='true'? 1:0;
+}
+window.claim=id=>{ const q=quests.find(x=>x.id===id); if(q.check()) return; coins+=q.reward; saveCoins(); q.id==='createCountdown'&&localStorage.setItem('questDone_createCountdown','true'); updateUI(); }
 
-    let coins = parseInt(localStorage.getItem('coins')) || 10;
-    let lang = 'pl';
-    const coinsEl = document.getElementById('coinsCount');
-    const questListEl = document.getElementById('questList');
+document.getElementById('langDropdownBtn').addEventListener('click',()=>{
+  document.getElementById('langOptions').classList.toggle('show');
+});
+document.querySelectorAll('.lang-options button').forEach(b=>b.onclick=e=>{ lang=e.target.dataset.lang; updateUI(); document.getElementById('langOptions').classList.remove('show'); });
 
-    function saveCoins() {
-      localStorage.setItem('coins', coins);
-    }
+document.getElementById('logoutBtn').addEventListener('click',()=>signOut(auth).then(()=>location.href='login.html'));
 
-    function updateUI() {
-      coinsEl.textContent = coins;
-      questListEl.innerHTML = '';
-      quests.forEach(q => {
-        const done = q.check();
-        let progressPercent = done ? 100 : 0;
-        if (q.id === 'accountAge') {
-          const createdAt = localStorage.getItem('accountCreatedAt');
-          if (createdAt) {
-            const diffH = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
-            progressPercent = Math.min(100, (diffH / 12) * 100);
-          }
-        }
-        const title = lang === 'pl' ? q.titlePL : q.titleEN;
-        questListEl.insertAdjacentHTML('beforeend', `
-          <div class="quest" id="quest-${q.id}">
-            <div class="quest-header">
-              <div>${title} <span class="coin-reward">+${q.reward} 🪙</span></div>
-              <div class="quest-status">${done ? '✅' : '❌'}</div>
-            </div>
-            <div class="progress-bar-container">
-              <div class="progress-bar" style="width:${progressPercent}%;"></div>
-            </div>
-            <div class="progress-text">${q.progressText()}</div>
-            ${!done && q.reward > 0 ? `<button onclick="claimReward('${q.id}')" style="margin-top:0.6rem; padding: 0.3rem 0.7rem; border:none; background:#4caf50; color:#fff; border-radius:4px; cursor:pointer;">Odbierz nagrodę</button>` : ''}
-          </div>
-        `);
-      });
-    }
+onAuthStateChanged(auth,user=>{
+  if(!user) return location.href='login.html';
+  if(!localStorage.getItem('accountCreatedAt')) localStorage.setItem('accountCreatedAt',new Date().toISOString());
+  updateUI();
+});
 
-    window.claimReward = function(questId) {
-      const q = quests.find(q => q.id === questId);
-      if (!q || !q.check()) return alert('Nie możesz odebrać tej nagrody.');
-      coins += q.reward;
-      saveCoins();
-      updateUI();
-    };
-
-    window.setLang = function(newLang) {
-      lang = newLang;
-      updateUI();
-      document.getElementById('langOptions').classList.remove('show');
-    };
-
-    window.toggleLangDropdown = function() {
-      document.getElementById('langOptions').classList.toggle('show');
-    };
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      signOut(auth).then(() => {
-        window.location.href = 'login.html';
-      });
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = 'login.html';
-      updateUI();
-    });
   </script>
 </body>
 </html>
