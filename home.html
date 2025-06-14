@@ -1,160 +1,277 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Home - RetroCountdowns</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #121212;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      background: #1f1f1f;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-    main {
-      flex: 1;
-      padding: 2rem;
-      text-align: center;
-    }
-    footer {
-      background: #1f1f1f;
-      padding: 0.5rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      color: #bbb;
-      font-size: 0.9rem;
-    }
-    footer button {
-      background: none;
-      border: 1.5px solid #bbb;
-      border-radius: 3px;
-      color: #bbb;
-      padding: 0.3rem 0.7rem;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    footer button:hover, footer button.active {
-      background-color: #bb86fc;
-      color: #121212;
-      border-color: #bb86fc;
-    }
-    button#logoutBtn {
-      margin-top: 2rem;
-      padding: 0.5rem 1rem;
-      background-color: #bb86fc;
-      border: none;
-      border-radius: 4px;
-      color: #121212;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button#logoutBtn:hover {
-      background-color: #9a67ea;
-    }
-  </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Home - Twoja Strona</title>
+<style>
+  body {
+    margin: 0; padding: 0; background: #121212; color: #eee; font-family: Arial, sans-serif;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  header {
+    padding: 1rem 1.5rem;
+    background: #222;
+    font-size: 1.4rem;
+    font-weight: 600;
+    user-select: none;
+  }
+  main {
+    flex-grow: 1;
+    padding: 1rem 1.5rem;
+  }
+  /* Coins i questy */
+  .coins-display {
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: gold;
+    user-select: none;
+  }
+  .quest-list {
+    max-width: 400px;
+    background: #222;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #eee;
+  }
+  .quest {
+    margin-bottom: 1.3rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.8rem;
+  }
+  .quest-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .coin-reward {
+    color: #f7d358;
+  }
+  .quest-status {
+    font-size: 1.4rem;
+  }
+  .progress-bar-container {
+    background: #444;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    height: 14px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: #4caf50;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    margin-top: 0.2rem;
+    font-size: 0.9rem;
+    color: #bbb;
+    text-align: right;
+    user-select: none;
+  }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCl7uBGgJnfoaYi4By49EItjJZG6Dx0P_k",
-      authDomain: "retrocountdowns.firebaseapp.com",
-      projectId: "retrocountdowns",
-      storageBucket: "retrocountdowns.firebasestorage.app",
-      messagingSenderId: "846455265699",
-      appId: "1:846455265699:web:e29f1102043afd79282216"
-    };
+  /* Dolny pasek z wyborem języka */
+  footer {
+    background: #222;
+    padding: 0.8rem 1rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    position: sticky;
+    bottom: 0;
+  }
+  .language-selector {
+    position: relative;
+    user-select: none;
+  }
+  .language-button {
+    background: #333;
+    border: none;
+    color: #eee;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+  }
+  .language-button svg {
+    margin-left: 6px;
+    width: 12px; height: 12px;
+    fill: #eee;
+    transition: transform 0.3s ease;
+  }
+  .language-button.open svg {
+    transform: rotate(180deg);
+  }
+  .language-dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: #333;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    display: none;
+    z-index: 10;
+  }
+  .language-dropdown.open {
+    display: block;
+  }
+  .language-dropdown button {
+    background: none;
+    border: none;
+    color: #eee;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+  }
+  .language-dropdown button:hover {
+    background: #555;
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // Teksty w dwóch językach
-    const texts = {
-      pl: {
-        welcome: (user) => `Witaj, ${user}!`,
-        personalHomepage: "To jest Twoja spersonalizowana strona po zalogowaniu.",
-        logout: "Wyloguj się",
-      },
-      en: {
-        welcome: (user) => `Welcome, ${user}!`,
-        personalHomepage: "This is your personal homepage after login.",
-        logout: "Logout",
-      }
-    };
-
-    let currentLang = 'pl';
-
-    function setLanguage(lang, userName) {
-      currentLang = lang;
-      document.getElementById('welcome').textContent = texts[lang].welcome(userName);
-      document.getElementById('personalHomepage').textContent = texts[lang].personalHomepage;
-      document.getElementById('logoutBtn').textContent = texts[lang].logout;
-
-      // Aktywne podświetlenie przycisku
-      document.querySelectorAll('footer button.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
-      });
-    }
-
-    window.onload = () => {
-      const welcomeEl = document.getElementById('welcome');
-      const personalHomepageEl = document.getElementById('personalHomepage');
-      const logoutBtn = document.getElementById('logoutBtn');
-
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const userName = user.displayName || user.email || 'User';
-          setLanguage(currentLang, userName);
-        } else {
-          window.location.href = 'index.html';
-        }
-      });
-
-      logoutBtn.addEventListener('click', () => {
-        signOut(auth).then(() => {
-          window.location.href = 'index.html';
-        }).catch((error) => {
-          alert('Error during logout: ' + error.message);
-        });
-      });
-
-      // Obsługa przycisków zmiany języka
-      document.querySelectorAll('footer button.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          // Pobierz nazwę użytkownika ponownie z powitania albo auth.currentUser
-          const user = auth.currentUser;
-          if (!user) return;
-          const userName = user.displayName || user.email || 'User';
-          setLanguage(btn.dataset.lang, userName);
-        });
-      });
-    };
-  </script>
+  /* Powitanie */
+  .welcome-message {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    user-select: none;
+  }
+</style>
 </head>
 <body>
-  <header>RetroCountdowns - Home</header>
-  <main>
-    <h1 id="welcome">Loading...</h1>
-    <p id="personalHomepage"></p>
-    <button id="logoutBtn">Logout</button>
-  </main>
-  <footer>
-    <button class="lang-btn active" data-lang="pl">PL</button>
-    <button class="lang-btn" data-lang="en">EN</button>
-  </footer>
+<header>
+  Twoja Strona - Home
+</header>
+<main>
+  <div class="welcome-message" id="welcomeMessage">
+    Witaj, użytkowniku!
+  </div>
+
+  <div class="coins-display">
+    Monety: <span id="coinsCount">0</span>
+  </div>
+
+  <div class="quest-list" id="questList">
+    <!-- Questy będą tutaj dodane dynamicznie -->
+  </div>
+</main>
+<footer>
+  <div class="language-selector">
+    <button id="languageBtn" class="language-button" aria-haspopup="true" aria-expanded="false">
+      Język ▼
+    </button>
+    <div id="languageDropdown" class="language-dropdown" role="menu" aria-label="Wybór języka">
+      <button type="button" data-lang="pl" role="menuitem">Polski</button>
+      <button type="button" data-lang="en" role="menuitem">English</button>
+      <button type="button" data-lang="es" role="menuitem">Español</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Dane questów - przykład
+  const quests = [
+    { id: 1, name: "Pierwszy quest", description: "Wykonaj coś fajnego", current: 0, max: 5, coinsReward: 10 },
+    { id: 2, name: "Drugi quest", description: "Zbierz 10 monet", current: 3, max: 10, coinsReward: 15 },
+    { id: 3, name: "Trzeci quest", description: "Wykonaj zadanie specjalne", current: 1, max: 1, coinsReward: 50 }
+  ];
+
+  let coins = 0;
+
+  // Aktualizacja coins w UI
+  function updateCoins() {
+    document.getElementById('coinsCount').textContent = coins;
+  }
+
+  // Render questów
+  function renderQuests() {
+    const list = document.getElementById('questList');
+    list.innerHTML = '';
+    quests.forEach(q => {
+      const isCompleted = q.current >= q.max;
+      const questDiv = document.createElement('div');
+      questDiv.className = 'quest';
+
+      questDiv.innerHTML = `
+        <div class="quest-header">
+          <div>${q.name}</div>
+          <div class="coin-reward">+${q.coinsReward}💰</div>
+        </div>
+        <div>${q.description}</div>
+        <div class="progress-bar-container" aria-label="Postęp zadania: ${q.current} z ${q.max}">
+          <div class="progress-bar" style="width: ${Math.min((q.current/q.max)*100,100)}%;"></div>
+        </div>
+        <div class="progress-text">${q.current} / ${q.max}</div>
+        <button ${isCompleted ? 'disabled' : ''} aria-disabled="${isCompleted}" aria-label="Zakończ quest ${q.name}" onclick="completeQuest(${q.id})">
+          ${isCompleted ? 'Zakończono' : 'Wykonaj'}
+        </button>
+      `;
+
+      list.appendChild(questDiv);
+    });
+  }
+
+  // Funkcja do ukończenia questu
+  function completeQuest(id) {
+    const quest = quests.find(q => q.id === id);
+    if (!quest) return;
+
+    if (quest.current < quest.max) {
+      quest.current++;
+    }
+    if (quest.current >= quest.max) {
+      coins += quest.coinsReward;
+      alert(`Gratulacje! Otrzymałeś ${quest.coinsReward} monet.`);
+    }
+    updateCoins();
+    renderQuests();
+  }
+
+  // Powitanie dynamiczne
+  function setWelcomeMessage() {
+    const hour = new Date().getHours();
+    let greeting = "Witaj, użytkowniku!";
+    if (hour >= 5 && hour < 12) greeting = "Dzień dobry!";
+    else if (hour >= 12 && hour < 18) greeting = "Dzień dobry po południu!";
+    else if (hour >= 18 && hour < 22) greeting = "Dobry wieczór!";
+    else greeting = "Dobranoc!";
+    document.getElementById('welcomeMessage').textContent = greeting;
+  }
+
+  // Dropdown języka
+  const languageBtn = document.getElementById('languageBtn');
+  const languageDropdown = document.getElementById('languageDropdown');
+
+  languageBtn.addEventListener('click', () => {
+    const expanded = languageBtn.getAttribute('aria-expanded') === 'true';
+    languageBtn.setAttribute('aria-expanded', String(!expanded));
+    languageBtn.classList.toggle('open');
+    languageDropdown.classList.toggle('open');
+  });
+
+  // Wybór języka (na razie tylko alert)
+  languageDropdown.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      alert(`Wybrano język: ${lang}`);
+      languageBtn.setAttribute('aria-expanded', 'false');
+      languageBtn.classList.remove('open');
+      languageDropdown.classList.remove('open');
+    });
+  });
+
+  // Inicjalizacja
+  updateCoins();
+  renderQuests();
+  setWelcomeMessage();
+
+  // Odśwież powitanie co 5 minut
+  setInterval(setWelcomeMessage, 300000);
+</script>
 </body>
 </html>
