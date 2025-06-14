@@ -3,35 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Countdown</title>
+  <title>Odliczanie</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #111;
-      color: #fff;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      text-align: center;
     }
-    h1 { font-size: 2rem; }
-    #timer {
+
+    h1 {
       font-size: 2.5rem;
-      margin-top: 1rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    #timer {
+      font-size: 4rem;
+      font-weight: bold;
+      text-shadow: 0 0 20px #00ffcc;
+    }
+
+    #targetTime {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      color: #cccccc;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      #timer { font-size: 3rem; }
+      #targetTime { font-size: 1rem; }
     }
   </style>
 </head>
 <body>
   <h1 id="countdownTitle">Odliczanie</h1>
   <div id="timer">00:00:00</div>
+  <div id="targetTime"></div>
 
   <script>
-    // Pobierz ID z adresu URL
+    // Pobierz ID z URL
     const params = new URLSearchParams(window.location.search);
     const id = parseInt(params.get('id'));
 
-    // Pobierz countdowny z localStorage
+    // Pobierz countdowny
     const countdowns = JSON.parse(localStorage.getItem('countdowns') || '[]');
     const countdown = countdowns.find(c => c.id === id);
 
@@ -40,11 +63,20 @@
     } else {
       document.getElementById('countdownTitle').textContent = countdown.name;
 
-      const endTime = new Date(countdown.datetime).getTime();
+      const endTime = new Date(countdown.datetime);
+      const endTimestamp = endTime.getTime();
+
+      // Format daty PL
+      const dateOptions = {
+        day: "numeric", month: "long", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      };
+      document.getElementById('targetTime').textContent = 
+        "Odliczanie do: " + endTime.toLocaleDateString("pl-PL", dateOptions);
 
       function updateCountdown() {
         const now = Date.now();
-        const diff = endTime - now;
+        const diff = endTimestamp - now;
 
         if (diff <= 0) {
           document.getElementById("timer").textContent = "00:00:00";
