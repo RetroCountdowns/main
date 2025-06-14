@@ -50,7 +50,6 @@
       position: relative;
     }
 
-    /* Dropdown styling */
     .lang-dropdown {
       position: relative;
       user-select: none;
@@ -109,61 +108,78 @@
       background-color: #bb86fc;
       color: #121212;
     }
-<style>
-  .coins-display {
-    font-weight: 700;
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    color: gold;
-    user-select: none;
-  }
-  .quest-list {
-    max-width: 350px;
-    background: #222;
-    border-radius: 8px;
-    padding: 1rem;
-    color: #eee;
-    font-family: Arial, sans-serif;
-  }
-  .quest {
-    margin-bottom: 1.3rem;
-    border-bottom: 1px solid #444;
-    padding-bottom: 0.8rem;
-  }
-  .quest-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-  .coin-reward {
-    color: #f7d358;
-  }
-  .quest-status {
-    font-size: 1.4rem;
-  }
-  .progress-bar-container {
-    background: #444;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 0.5rem;
-    height: 14px;
-  }
-  .progress-bar {
-    height: 100%;
-    background: #4caf50;
-    width: 0%;
-    transition: width 0.4s ease;
-  }
-  .progress-text {
-    margin-top: 0.2rem;
-    font-size: 0.9rem;
-    color: #bbb;
-    text-align: right;
-    user-select: none;
-  }
+
+    .coins-display {
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: gold;
+      user-select: none;
+    }
+    .quest-list {
+      max-width: 350px;
+      background: #222;
+      border-radius: 8px;
+      padding: 1rem;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      margin: 0 auto;
+    }
+    .quest {
+      margin-bottom: 1.3rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.8rem;
+    }
+    .quest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .coin-reward {
+      color: #f7d358;
+    }
+    .quest-status {
+      font-size: 1.4rem;
+    }
+    .progress-bar-container {
+      background: #444;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      height: 14px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #4caf50;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .progress-text {
+      margin-top: 0.2rem;
+      font-size: 0.9rem;
+      color: #bbb;
+      text-align: right;
+      user-select: none;
+    }
   </style>
+</head>
+<body>
+  <header>RetroCountdowns</header>
+  <main>
+    <div class="coins-display">Coins: <span id="coinsCount">10</span> 🪙</div>
+    <div class="quest-list" id="questList"></div>
+    <button id="logoutBtn">Wyloguj się</button>
+  </main>
+  <footer>
+    <div class="lang-dropdown" onclick="toggleLangDropdown()">Język</div>
+    <div class="lang-options" id="langOptions">
+      <button onclick="setLang('pl')">PL</button>
+      <button onclick="setLang('en')">EN</button>
+    </div>
+  </footer>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
@@ -172,7 +188,7 @@
       apiKey: "AIzaSyCl7uBGgJnfoaYi4By49EItjJZG6Dx0P_k",
       authDomain: "retrocountdowns.firebaseapp.com",
       projectId: "retrocountdowns",
-      storageBucket: "retrocountdowns.firebasestorage.app",
+      storageBucket: "retrocountdowns.appspot.com",
       messagingSenderId: "846455265699",
       appId: "1:846455265699:web:e29f1102043afd79282216"
     };
@@ -180,261 +196,110 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const texts = {
-      pl: {
-        welcome: (user) => `Witaj, ${user}!`,
-        personalHomepage: "To jest Twoja spersonalizowana strona po zalogowaniu.",
-<div class="coins-display">Coins: <span id="coinsCount">10</span> 🪙</div>
-
-<div class="quest-list" id="questList">
-
-  <!-- Questy zostaną wygenerowane dynamicznie tutaj -->
-
-</div>
-
-<script>
-  // QUESTY - konfiguracja
-  const quests = [
-    {
-      id: 'createAccount',
-      titlePL: 'Utwórz konto',
-      titleEN: 'Create account',
-      reward: 10,
-      check: () => {
-        // Załóżmy, że konto jest utworzone jeśli jest zapisany czas rejestracji
-        return !!localStorage.getItem('accountCreatedAt');
+    const quests = [
+      {
+        id: 'createAccount',
+        titlePL: 'Utwórz konto',
+        titleEN: 'Create account',
+        reward: 10,
+        check: () => !!localStorage.getItem('accountCreatedAt'),
+        progressText: () => '1/1'
       },
-      progressText: () => '1/1',
-    },
-    {
-      id: 'createCountdown',
-      titlePL: 'Utwórz odliczanie',
-      titleEN: 'Create countdown',
-      reward: 8,
-      check: () => {
-        // Prosty warunek — czy w localStorage jest info, że odliczanie stworzone
-        return !!localStorage.getItem('countdownCreated');
+      {
+        id: 'createCountdown',
+        titlePL: 'Utwórz odliczanie',
+        titleEN: 'Create countdown',
+        reward: 8,
+        check: () => !!localStorage.getItem('countdownCreated'),
+        progressText: () => '1/1'
       },
-      progressText: () => '1/1',
-    },
-    {
-      id: 'accountAge',
-      titlePL: 'Konto ma min. 12 godzin',
-      titleEN: 'Account age ≥ 12h',
-      reward: 0,
-      check: () => {
-        const createdAt = localStorage.getItem('accountCreatedAt');
-        if (!createdAt) return false;
-        const createdTime = new Date(createdAt).getTime();
-        const now = Date.now();
-        const diffH = (now - createdTime) / (1000 * 60 * 60);
-        return diffH >= 12;
-      },
-      progressText: () => {
-        const createdAt = localStorage.getItem('accountCreatedAt');
-        if (!createdAt) return '0/12h';
-        const createdTime = new Date(createdAt).getTime();
-        const now = Date.now();
-        const diffH = (now - createdTime) / (1000 * 60 * 60);
-        const progressH = Math.min(diffH, 12).toFixed(1);
-        return `${progressH}/12h`;
-      },
-      reward: 0
-    }
-  ];
-
-  // Stan coins
-  let coins = parseInt(localStorage.getItem('coins')) || 10;
-
-  // Język - na potrzeby przykładu w PL, możesz podłączyć to pod swój system językowy
-  let lang = 'pl';
-
-  const coinsEl = document.getElementById('coinsCount');
-  const questListEl = document.getElementById('questList');
-
-  function saveCoins() {
-    localStorage.setItem('coins', coins);
-  }
-
-  function updateUI() {
-    coinsEl.textContent = coins;
-
-    questListEl.innerHTML = '';
-
-    let doneCount = 0;
-    quests.forEach(q => {
-      const done = q.check();
-      if(done) doneCount++;
-      // Pasek progressa
-      let progressPercent = done ? 100 : 0;
-      if(q.id === 'accountAge') {
-        const createdAt = localStorage.getItem('accountCreatedAt');
-        if (createdAt) {
+      {
+        id: 'accountAge',
+        titlePL: 'Konto ma min. 12 godzin',
+        titleEN: 'Account age ≥ 12h',
+        reward: 0,
+        check: () => {
+          const createdAt = localStorage.getItem('accountCreatedAt');
+          if (!createdAt) return false;
           const createdTime = new Date(createdAt).getTime();
-          const now = Date.now();
-          const diffH = (now - createdTime) / (1000 * 60 * 60);
-          progressPercent = Math.min(100, (diffH / 12) * 100);
+          return (Date.now() - createdTime) / (1000 * 60 * 60) >= 12;
+        },
+        progressText: () => {
+          const createdAt = localStorage.getItem('accountCreatedAt');
+          if (!createdAt) return '0/12h';
+          const diffH = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+          return `${Math.min(diffH, 12).toFixed(1)}/12h`;
         }
       }
+    ];
 
-      // Tekst tytułu wg języka
-      const title = lang === 'pl' ? q.titlePL : q.titleEN;
+    let coins = parseInt(localStorage.getItem('coins')) || 10;
+    let lang = 'pl';
+    const coinsEl = document.getElementById('coinsCount');
+    const questListEl = document.getElementById('questList');
 
-      questListEl.insertAdjacentHTML('beforeend', `
-        <div class="quest" id="quest-${q.id}">
-          <div class="quest-header">
-            <div>${title} <span class="coin-reward">+${q.reward} 🪙</span></div>
-            <div class="quest-status">${done ? '✅' : '❌'}</div>
+    function saveCoins() {
+      localStorage.setItem('coins', coins);
+    }
+
+    function updateUI() {
+      coinsEl.textContent = coins;
+      questListEl.innerHTML = '';
+      quests.forEach(q => {
+        const done = q.check();
+        let progressPercent = done ? 100 : 0;
+        if (q.id === 'accountAge') {
+          const createdAt = localStorage.getItem('accountCreatedAt');
+          if (createdAt) {
+            const diffH = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+            progressPercent = Math.min(100, (diffH / 12) * 100);
+          }
+        }
+        const title = lang === 'pl' ? q.titlePL : q.titleEN;
+        questListEl.insertAdjacentHTML('beforeend', `
+          <div class="quest" id="quest-${q.id}">
+            <div class="quest-header">
+              <div>${title} <span class="coin-reward">+${q.reward} 🪙</span></div>
+              <div class="quest-status">${done ? '✅' : '❌'}</div>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width:${progressPercent}%;"></div>
+            </div>
+            <div class="progress-text">${q.progressText()}</div>
+            ${!done && q.reward > 0 ? `<button onclick="claimReward('${q.id}')" style="margin-top:0.6rem; padding: 0.3rem 0.7rem; border:none; background:#4caf50; color:#fff; border-radius:4px; cursor:pointer;">Odbierz nagrodę</button>` : ''}
           </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar" style="width:${progressPercent}%;"></div>
-          </div>
-          <div class="progress-text">${q.progressText()}</div>
-          ${!done && q.reward > 0 ? `<button onclick="claimReward('${q.id}')" style="margin-top:0.6rem; padding: 0.3rem 0.7rem; border:none; background:#4caf50; color:#fff; border-radius:4px; cursor:pointer;">Odbierz nagrodę</button>` : ''}
-        </div>
-      `);
+        `);
+      });
+    }
+
+    window.claimReward = function(questId) {
+      const q = quests.find(q => q.id === questId);
+      if (!q || !q.check()) return alert('Nie możesz odebrać tej nagrody.');
+      coins += q.reward;
+      saveCoins();
+      updateUI();
+    };
+
+    window.setLang = function(newLang) {
+      lang = newLang;
+      updateUI();
+      document.getElementById('langOptions').classList.remove('show');
+    };
+
+    window.toggleLangDropdown = function() {
+      document.getElementById('langOptions').classList.toggle('show');
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'login.html';
+      });
     });
 
-    // Podsumowanie progressa całego
-    // (opcjonalne) np. pasek globalny progress
-  }
-
-  function claimReward(questId) {
-    const q = quests.find(q => q.id === questId);
-    if (!q) return alert('Quest nie znaleziony');
-
-    if (q.check()) {
-      alert('Ten quest został już ukończony!');
-      return;
-    }
-
-    // Specjalna obsługa questów, które nie mogą być "odbierane" od razu np. accountAge
-    if (questId === 'accountAge') {
-      alert('Ten quest jest aktywowany automatycznie po spełnieniu warunku.');
-      return;
-    }
-
-    // Oznacz quest jako zrobiony w localStorage (dla prostoty)
-    if (questId === 'createAccount') {
-      // Tutaj nic nie robimy, bo ten quest automatycznie jest spełniony po utworzeniu konta
-      alert('Utwórz konto, aby zdobyć ten quest!');
-      return;
-    }
-
-    if (questId === 'createCountdown') {
-      if (!localStorage.getItem('countdownCreated')) {
-        alert('Najpierw stwórz odliczanie!');
-        return;
-      }
-    }
-
-    // Jeśli spełnione warunki, dodaj coins i zapisz progress
-    coins += q.reward;
-    saveCoins();
-
-    // Zaznacz quest jako ukończony - na razie zapisz do localStorage
-    localStorage.setItem('questDone_' + questId, 'true');
-
-    updateUI();
-    alert(`Zdobyłeś ${q.reward} coins!`);
-  }
-
-  // Inicjuj
-  updateUI();
-
-  // --- symulacje / testowe funkcje ---
-
-  // Przykład: żeby "utworzyć konto" - ustawiamy datę w localStorage (symulacja)
-  if (!localStorage.getItem('accountCreatedAt')) {
-    localStorage.setItem('accountCreatedAt', new Date().toISOString());
-  }
-
-  // Przykład: żeby "utworzyć odliczanie"
-  // localStorage.setItem('countdownCreated', 'true');
-</script>
-        logout: "Wyloguj się",
-        langName: "PL"
-      },
-      en: {
-        welcome: (user) => `Welcome, ${user}!`,
-        personalHomepage: "This is your personal homepage after login.",
-        logout: "Logout",
-        langName: "EN"
-      }
-    };
-
-    let currentLang = 'pl';
-
-    function setLanguage(lang, userName) {
-      currentLang = lang;
-      document.getElementById('welcome').textContent = texts[lang].welcome(userName);
-      document.getElementById('personalHomepage').textContent = texts[lang].personalHomepage;
-      document.getElementById('logoutBtn').textContent = texts[lang].logout;
-      document.getElementById('langDropdownBtn').textContent = texts[lang].langName + " ▼";
-
-      // Ukryj dropdown po wyborze
-      document.querySelector('.lang-options').classList.remove('show');
-    }
-
-    window.onload = () => {
-      const welcomeEl = document.getElementById('welcome');
-      const personalHomepageEl = document.getElementById('personalHomepage');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const langDropdownBtn = document.getElementById('langDropdownBtn');
-      const langOptions = document.querySelector('.lang-options');
-
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const userName = user.displayName || user.email || 'User';
-          setLanguage(currentLang, userName);
-        } else {
-          window.location.href = 'index.html';
-        }
-      });
-
-      logoutBtn.addEventListener('click', () => {
-        signOut(auth).then(() => {
-          window.location.href = 'index.html';
-        }).catch((error) => {
-          alert('Error during logout: ' + error.message);
-        });
-      });
-
-      langDropdownBtn.addEventListener('click', () => {
-        langOptions.classList.toggle('show');
-      });
-
-      langOptions.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const user = auth.currentUser;
-          if (!user) return;
-          const userName = user.displayName || user.email || 'User';
-          setLanguage(btn.dataset.lang, userName);
-        });
-      });
-
-      // Kliknięcie poza dropdown zamyka menu
-      document.addEventListener('click', (event) => {
-        if (!event.target.closest('.lang-dropdown')) {
-          langOptions.classList.remove('show');
-        }
-      });
-    };
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = 'login.html';
+      updateUI();
+    });
   </script>
-</head>
-<body>
-  <header>RetroCountdowns - Home</header>
-  <main>
-    <h1 id="welcome">Loading...</h1>
-    <p id="personalHomepage"></p>
-    <button id="logoutBtn">Logout</button>
-  </main>
-  <footer>
-    <div class="lang-dropdown" id="langDropdownBtn">PL ▼</div>
-    <div class="lang-options">
-      <button data-lang="pl">Polski</button>
-      <button data-lang="en">English</button>
-    </div>
-  </footer>
 </body>
 </html>
