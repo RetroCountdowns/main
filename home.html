@@ -114,7 +114,7 @@ function displayUserCountdowns() {
   container.style.padding = '1rem';
   container.style.color = '#eee';
 
-  const countdowns = JSON.parse(localStorage.getItem('Countdowns') || '[]');
+  const countdowns = JSON.parse(localStorage.getItem('countdowns') || '[]');
   if (countdowns.length === 0) {
     container.textContent = 'Nie masz jeszcze żadnych odliczań.';
   } else {
