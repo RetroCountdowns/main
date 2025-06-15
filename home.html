@@ -105,7 +105,42 @@ onAuthStateChanged(auth,user=>{
   if(!localStorage.getItem('accountCreatedAt')) localStorage.setItem('accountCreatedAt',new Date().toISOString());
   updateUI();
 });
+function displayUserCountdowns() {
+  const container = document.createElement('div');
+  container.style.maxWidth = '400px';
+  container.style.margin = '1rem auto';
+  container.style.background = '#222';
+  container.style.borderRadius = '8px';
+  container.style.padding = '1rem';
+  container.style.color = '#eee';
 
+  const countdowns = JSON.parse(localStorage.getItem('myCountdowns') || '[]');
+  if (countdowns.length === 0) {
+    container.textContent = 'Nie masz jeszcze żadnych odliczań.';
+  } else {
+    container.innerHTML = '<h2>Twoje odliczania:</h2>';
+    countdowns.forEach(cd => {
+      const link = document.createElement('a');
+      link.href = `countdown.html?id=${cd.id}`;
+      link.textContent = cd.title || `Countdown ${cd.id}`;
+      link.style.display = 'block';
+      link.style.color = '#66aaff';
+      link.style.marginBottom = '0.5rem';
+      container.appendChild(link);
+    });
+  }
+
+  // Dodajemy ten kontener do main, zaraz przed sekcją odliczania
+  const main = document.querySelector('main');
+  const refNode = document.querySelector('.countdown-section');
+  main.insertBefore(container, refNode);
+}
+
+// Wywołaj tę funkcję przy ładowaniu strony
+window.addEventListener('DOMContentLoaded', () => {
+  displayUserCountdowns();
+});
+    
   </script>
 </body>
 </html>
