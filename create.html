@@ -93,7 +93,7 @@
   <script>
     // Pobierz bieżący stan
     let countdowns = JSON.parse(localStorage.getItem('countdowns')||'[]');
-    let questDone = localStorage.getItem('countdown')==='true';
+    let questDone = localStorage.getItem('countdownCreated')==='true';
 
     // Aktualizuj pasek questa
     function updateQuestProgress(){
