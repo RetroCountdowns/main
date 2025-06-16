@@ -106,43 +106,31 @@
 
     // Formularz
     document.getElementById('createForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const name = document.getElementById('name').value.trim();
-  const dt = document.getElementById('datetime').value;
-  if(!name || !dt) return;
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const dt = document.getElementById('datetime').value;
+      if(!name||!dt) return;
 
-  // Sprawdź ilość monet
-  let coins = parseInt(localStorage.getItem('coins') || '0', 10);
-  if(coins < 1){
-    alert('Nie masz wystarczającej liczby monet, aby stworzyć licznik!');
-    return;
-  }
+      // ID = kolejny numer
+      const id = countdowns.length + 1;
+      // sanitize nazwy do URL
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
-  // Odejmij 1 monetę
-  coins -= 1;
-  localStorage.setItem('coins', coins.toString());
+      // Dodaj do localStorage
+      countdowns.push({ id, name, slug, datetime: dt });
+      localStorage.setItem('countdowns', JSON.stringify(countdowns));
+      localStorage.setItem('countdownCreated','true');
 
-  // ID = kolejny numer
-  const id = countdowns.length + 1;
-  // sanitize nazwy do URL
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      // Uaktualnij quest
+      questDone = true;
+      updateQuestProgress();
 
-  // Dodaj do localStorage
-  countdowns.push({ id, name, slug, datetime: dt });
-  localStorage.setItem('countdowns', JSON.stringify(countdowns));
-  localStorage.setItem('countdownCreated','true');
-
-  // Uaktualnij quest
-  questDone = true;
-  updateQuestProgress();
-
-  // Opcjonalnie: zaktualizuj UI monet, jeśli masz element do wyświetlania stanu monet
-
-  // Przekierowanie
-  setTimeout(()=>{
-    window.location.href = `countdown.html?id=${id}`;
-  }, 300);
-});
+      // Przekierowanie
+      setTimeout(()=>{
+        window.location.href = `countdown.html?id=${id}`;
+      }, 300);
+    });
   </script>
 </body>
 </html>
+
