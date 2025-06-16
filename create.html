@@ -16,6 +16,11 @@
       margin: 0;
     }
     h1 { margin-bottom: 1rem; }
+    #coins-display {
+      color: #f7d358;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
     form {
       background: #1f1f1f;
       padding: 1.5rem;
@@ -75,9 +80,16 @@
 <body>
   <h1>Create a New Countdown</h1>
 
+  <!-- Wyświetlenie stanu monet -->
+  <div id="coins-display">Monety: <span id="coins-count">0</span></div>
+
   <div class="progress-container">
-    <div class="progress-text">Your countdowns completed for quest: <span id="qc-count">0</span>/1</div>
-    <div class="progress-bar-bg"><div id="qc-bar" class="progress-bar"></div></div>
+    <div class="progress-text">
+      Your countdowns completed for quest: <span id="qc-count">0</span>/1
+    </div>
+    <div class="progress-bar-bg">
+      <div id="qc-bar" class="progress-bar"></div>
+    </div>
   </div>
 
   <form id="createForm">
@@ -91,46 +103,63 @@
   </form>
 
   <script>
-    // Pobierz bieżący stan
-    let countdowns = JSON.parse(localStorage.getItem('countdowns')||'[]');
-    let questDone = localStorage.getItem('countdownCreated')==='true';
+    // Inicjalizacja lokalnych danych
+    let countdowns = JSON.parse(localStorage.getItem('countdowns') || '[]');
+    let questDone = localStorage.getItem('countdownCreated') === 'true';
 
-    // Aktualizuj pasek questa
-    function updateQuestProgress(){
-      const count = questDone?1:0;
+    // Aktualizacja paska questa
+    function updateQuestProgress() {
+      const count = questDone ? 1 : 0;
       document.getElementById('qc-count').textContent = count;
-      document.getElementById('qc-bar').style.width = (count*100)+'%';
+      document.getElementById('qc-bar').style.width = (count * 100) + '%';
     }
 
-    updateQuestProgress();
+    // Wyświetla stan monet
+    function updateCoinsDisplay() {
+      const coins = parseInt(localStorage.getItem('coins') || '0', 10);
+      document.getElementById('coins-count').textContent = coins;
+    }
 
-    // Formularz
-    document.getElementById('createForm').addEventListener('submit', e=>{
+    // Pierwotne wywołania
+    updateQuestProgress();
+    updateCoinsDisplay();
+
+    // Obsługa submit formularza
+    document.getElementById('createForm').addEventListener('submit', e => {
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const dt = document.getElementById('datetime').value;
-      if(!name||!dt) return;
+      if (!name || !dt) return;
 
-      // ID = kolejny numer
+      // Sprawdź monety
+      let coins = parseInt(localStorage.getItem('coins') || '0', 10);
+      if (coins < 1) {
+        alert('Nie masz wystarczającej liczby monet, aby stworzyć licznik!');
+        return;
+      }
+      // Odejmij monetę
+      coins -= 1;
+      localStorage.setItem('coins', coins.toString());
+      updateCoinsDisplay();
+
+      // Utwórz nowy licznik
       const id = countdowns.length + 1;
-      // sanitize nazwy do URL
-      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-
-      // Dodaj do localStorage
-      countdowns.push({ id, name, slug, datetime: dt });
+      const slug = name.toLowerCase()
+                       .replace(/[^a-z0-9]+/g, '-')
+                       .replace(/^-|-$/g, '');
+      countdowns.push({ id, title: name, slug, datetime: dt });
       localStorage.setItem('countdowns', JSON.stringify(countdowns));
-      localStorage.setItem('countdownCreated','true');
+      localStorage.setItem('countdownCreated', 'true');
 
       // Uaktualnij quest
       questDone = true;
       updateQuestProgress();
 
-      // Przekierowanie
-      setTimeout(()=>{
+      // Przekierowanie do nowego licznika
+      setTimeout(() => {
         window.location.href = `countdown.html?id=${id}`;
       }, 300);
     });
   </script>
 </body>
 </html>
-
