@@ -80,6 +80,37 @@
         progressText: () => localStorage.getItem('countdownCreated') === 'true' ? '1/1' : '0/1'
       },
       {
+  id: 'createFiveCountdowns',
+  titlePL: 'Stwórz 5 odliczeń',
+  titleEN: 'Create 5 countdowns',
+  reward: 15,
+  check: () => {
+    const cds = JSON.parse(localStorage.getItem('countdowns') || '[]');
+    return cds.length >= 5;
+  },
+  progressText: () => {
+    const cds = JSON.parse(localStorage.getItem('countdowns') || '[]');
+    return `${Math.min(cds.length, 5)}/5`;
+  }
+        },
+      {
+  id: 'accountAge2Days',
+  titlePL: 'Konto ≥ 2 dni',
+  titleEN: 'Account ≥ 2 days',
+  reward: 12,
+  check: () => {
+    const created = localStorage.getItem('accountCreatedAt');
+    if (!created) return false;
+    return (Date.now() - new Date(created)) / 86400000 >= 2; // 86400000 = ms in 1 day
+  },
+  progressText: () => {
+    const created = localStorage.getItem('accountCreatedAt');
+    if (!created) return '0/2d';
+    const days = (Date.now() - new Date(created)) / 86400000;
+    return `${Math.min(days, 2).toFixed(1)}/2d`;
+  }
+    },
+      {
         id: 'accountAge',
         titlePL: 'Konto ≥12h',
         titleEN: 'Account ≥12h',
